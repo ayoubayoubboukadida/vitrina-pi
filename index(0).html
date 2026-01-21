@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0f1a" />
+    <title>Pi Vitrina</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <main class="content">
+        <section class="page is-active" data-page="home">
+          <div class="home-header">
+            <div class="brand">
+              <div class="brand-mark" aria-hidden="true">π</div>
+              <div class="brand-name">Pi Vitrina</div>
+            </div>
+            <div class="home-actions">
+              <button id="themeToggle" class="icon-btn icon-sq" type="button" aria-label="تبديل الوضع الداكن">☾</button>
+              <button class="icon-btn icon-sq" type="button" data-toast="اللغة (واجهة فقط)" aria-label="اللغة">ع</button>
+            </div>
+          </div>
+
+          <div class="search-row">
+            <button id="homeAddProductBtn" class="btn btn-primary btn-sm" type="button">+</button>
+            <div class="search search-home">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M20 20l-3.5-3.5"></path>
+              </svg>
+              <input id="productSearch" class="search-input" type="text" placeholder="ابحث عن المنتجات..." />
+            </div>
+            <button id="localProductsBtn" class="icon-btn icon-sq" type="button" aria-label="فلترة حسب الموقع" aria-pressed="false">📍</button>
+            <button id="viewBtn" class="icon-btn icon-sq" type="button" aria-label="العرض">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16"></path>
+                <path d="M4 12h16"></path>
+                <path d="M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div id="homeSponsoredBanner" class="sponsored-banner" hidden></div>
+
+          <div id="categoryRow" class="cats" aria-label="الفئات"></div>
+          <div id="productsList" class="list products"></div>
+
+          <div id="homeAddProductCard" class="card" hidden>
+            <div class="card-title">إضافة منتج</div>
+            <form id="addProductForm" class="stack" autocomplete="off">
+              <div class="field">
+                <label class="label" for="prodTitle">اسم المنتج</label>
+                <input id="prodTitle" class="input" type="text" maxlength="20"  placeholder="مثال: سماعات" required />
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label class="label" for="prodCategory">الفئة</label>
+                  <select id="prodCategory" class="input" required>
+                    <option value="إلكترونيات">إلكترونيات</option>
+                    <option value="طعام">طعام</option>
+                    <option value="أزياء">أزياء</option>
+                    <option value="المنزل">المنزل</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="prodPrice">السعر (π)</label>
+                  <input id="prodPrice" class="input" type="number" min="0" step="0.00001" placeholder="10" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="prodImage">صورة المنتج</label>
+                <input id="prodImage" class="input" type="file" accept="image/*" />
+              </div>
+
+              <div id="prodImagePreviewWrap" class="img-preview-wrap" hidden>
+                <div class="img-preview-head">
+                  <div id="prodImagePreviewMeta" class="muted"></div>
+                  <button id="prodImageClearBtn" class="btn btn-outline btn-sm" type="button">إزالة</button>
+                </div>
+                <div class="img-preview">
+                  <img id="prodImagePreview" class="img-preview-img" alt="معاينة صورة المنتج" />
+                </div>
+                <label class="local-radio">
+                  <input id="prodImageCrop" type="checkbox" checked />
+                  <span class="local-radio-main">
+                    <span class="local-radio-title">قص تلقائي (مربع)</span>
+                    <span class="local-radio-desc">نقوم بقص الصورة من الوسط لتناسب العرض</span>
+                  </span>
+                </label>
+                <div class="field">
+                  <label class="label" for="prodImageQuality">جودة الصورة</label>
+                  <input id="prodImageQuality" class="input" type="range" min="0.5" max="0.95" step="0.05" value="0.82" />
+                  <div id="prodImageQualityHint" class="muted"></div>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="field">
+                  <label class="label" for="prodCountry">البلد</label>
+                  <input id="prodCountry" class="input" type="text" maxlength="20"  placeholder="مثال: المغرب" />
+                </div>
+                <div class="field">
+                  <label class="label" for="prodRegion">الجهة</label>
+                  <input id="prodRegion" class="input" type="text" maxlength="20" placeholder="مثال: الدار البيضاء سطات" />
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="prodCity">المدينة</label>
+                <input id="prodCity" class="input" type="text" maxlength="20" placeholder="مثال: الدار البيضاء" />
+              </div>
+              <label class="local-radio">
+                <input id="prodNoLocation" type="checkbox" />
+                <span class="local-radio-main">
+                  <span class="local-radio-title">لا أريد وضع الموقع</span>
+                </span>
+              </label>
+              <div class="field">
+                <label class="label" for="prodDesc">الوصف</label>
+                <textarea id="prodDesc" class="input" rows="3" maxlength="60" placeholder="اكتب وصفاً للمنتج..."></textarea>
+              </div>
+              <div class="grid-2">
+                <button class="btn btn-primary w-full" type="submit">نشر المنتج</button>
+                <button id="homeAddProductCancelBtn" class="btn btn-outline w-full" type="button">إلغاء</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="page" data-page="product">
+          <div class="topbar">
+            <button id="productBackBtn" class="icon-btn" type="button" aria-label="رجوع">←</button>
+            <h1 class="title">تفاصيل المنتج</h1>
+            <span></span>
+          </div>
+
+          <div id="productDetailsRoot"></div>
+        </section>
+
+        <section class="page" data-page="vendors">
+          <div class="topbar">
+            <h1 class="title">المتاجر</h1>
+            <button id="rentBoothBtn" class="btn btn-primary btn-sm" type="button">+ استئجار</button>
+          </div>
+
+          <div class="search">
+            <input id="vendorSearch" class="search-input" type="text" placeholder="ابحث عن المتاجر..." />
+          </div>
+
+          <div id="vendorRentCard" class="card" hidden>
+            <div class="card-title">استئجار كشك</div>
+            <form id="rentBoothForm" class="stack" autocomplete="off">
+              <div class="field">
+                <label class="label" for="vendorName">اسم المتجر</label>
+                <input id="vendorName" class="input" type="text" placeholder="مثال: viperco store" required />
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label class="label" for="vendorCategory">التصنيف</label>
+                  <select id="vendorCategory" class="input" required>
+                    <option value="إلكترونيات">إلكترونيات</option>
+                    <option value="طعام">طعام</option>
+                    <option value="أزياء">أزياء</option>
+                    <option value="المنزل">المنزل</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="vendorBooth">الكشك المطلوب</label>
+                  <input id="vendorBooth" class="input" type="text" placeholder="مثال: A1" required />
+                </div>
+              </div>
+              <div class="grid-2">
+                <button class="btn btn-primary w-full" type="submit">إرسال الطلب</button>
+                <button id="rentBoothCancelBtn" class="btn btn-outline w-full" type="button">إلغاء</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="vendorsList" class="list"></div>
+        </section>
+
+        <section class="page" data-page="chat">
+          <div class="chat-topbar">
+            <div class="chat-left">
+              <div class="avatar avatar-sm"></div>
+              <div>
+                <div id="chatTitle" class="chat-name">الدردشة</div>
+                <div id="chatSub" class="chat-sub"><span class="online"></span> متصل</div>
+              </div>
+            </div>
+            <div class="chat-actions">
+              <button id="chatBackBtn" class="icon-btn" type="button" aria-label="رجوع" hidden>←</button>
+            </div>
+          </div>
+
+          <div id="chatThreads" class="list"></div>
+          <div id="chatBody" class="chat-body"></div>
+
+          <form id="chatForm" class="chat-input" autocomplete="off">
+            <input id="chatText" class="chat-text" type="text" placeholder="اكتب رسالة..." />
+            <button class="send" type="submit" aria-label="إرسال">→</button>
+          </form>
+        </section>
+
+        <section class="page" data-page="ads">
+          <div class="topbar">
+            <h1 class="title">طلبات الإعلانات</h1>
+            <button id="adsRequestBtn" class="btn btn-primary btn-sm" type="button">+ طلب</button>
+          </div>
+
+          <div id="adsRequestCard" class="card" hidden>
+            <div class="card-title">طلب إعلان</div>
+            <form id="adsRequestForm" class="stack" autocomplete="off">
+              <div class="field">
+                <label class="label" for="adTitle">عنوان الإعلان</label>
+                <input id="adTitle" class="input" type="text" placeholder="مثال: تخفيض كبير على المنتجات" required />
+              </div>
+              <div class="field">
+                <label class="label" for="adDesc">وصف الإعلان</label>
+                <input id="adDesc" class="input" type="text" placeholder="اكتب وصفاً قصيراً" required />
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label class="label" for="adBudget">الميزانية (π)</label>
+                  <input id="adBudget" class="input" type="number" min="1" step="1" placeholder="50" required />
+                </div>
+                <div class="field">
+                  <label class="label" for="adDuration">المدة (أيام)</label>
+                  <input id="adDuration" class="input" type="number" min="1" step="1" placeholder="7" required />
+                </div>
+              </div>
+              <div class="grid-2">
+                <button class="btn btn-primary w-full" type="submit">إرسال الطلب</button>
+                <button id="adsRequestCancelBtn" class="btn btn-outline w-full" type="button">إلغاء</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="adsList" class="list"></div>
+        </section>
+
+        <section class="page" data-page="profile">
+          <div class="topbar">
+            <h1 class="title">الملف الشخصي</h1>
+            <button class="btn btn-outline btn-sm" type="button" data-toast="الإعدادات (واجهة فقط)">الإعدادات</button>
+          </div>
+
+          <div id="profileRoot"></div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="التنقل السفلي">
+        <button class="nav-item is-active" type="button" data-nav="home">
+          <span class="nav-ico">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5"></path>
+              <path d="M5 10.5V21a1.5 1.5 0 0 0 1.5 1.5H10V14h4v8.5h3.5A1.5 1.5 0 0 0 19 21V10.5"></path>
+            </svg>
+          </span>
+          <span class="nav-label">الرئيسية</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="vendors">
+          <span class="nav-ico">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 10h16v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 21z"></path>
+              <path d="M3 10 5 3h14l2 7"></path>
+              <path d="M9 22.5V16h6v6.5"></path>
+            </svg>
+          </span>
+          <span class="nav-label">المتاجر</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="chat">
+          <span class="nav-ico">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 15a4 4 0 0 1-4 4H9l-5 3V7a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4z"></path>
+              <path d="M8 9h8"></path>
+              <path d="M8 12h6"></path>
+            </svg>
+          </span>
+          <span class="nav-label">الدردشة</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="ads">
+          <span class="nav-ico">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 11v2a2 2 0 0 0 2 2h2l2 5h3l-1.5-5H16l5-2V9l-5-2H5a2 2 0 0 0-2 2z"></path>
+              <path d="M16 7v10"></path>
+            </svg>
+          </span>
+          <span class="nav-label">الإعلانات</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="profile">
+          <span class="nav-ico">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <path d="M12 13a4 4 0 1 0-4-4 4 4 0 0 0 4 4z"></path>
+            </svg>
+          </span>
+          <span class="nav-label">الحساب</span>
+        </button>
+      </nav>
+    </div>
+
+    <div id="localSheet" class="sheet-overlay" hidden>
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="الموقع">
+        <div class="sheet-header">
+          <button id="localSheetClose" class="icon-btn icon-sq" type="button" aria-label="إغلاق">×</button>
+          <div class="sheet-title">الموقع</div>
+          <div class="sheet-spacer" aria-hidden="true"></div>
+        </div>
+
+        <div class="sheet-body">
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="localCountryInput">البلد</label>
+              <input id="localCountryInput" class="input" type="text" placeholder="مثال: المغرب" />
+            </div>
+            <div class="field">
+              <label class="label" for="localRegionInput">الجهة</label>
+              <input id="localRegionInput" class="input" type="text" placeholder="مثال: الدار البيضاء سطات" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="localCityInput">المدينة</label>
+            <input id="localCityInput" class="input" type="text" placeholder="مثال: الدار البيضاء" />
+          </div>
+
+          <div class="card local-place-card">
+            <div class="row-between">
+              <div>
+                <div id="localPlaceName" class="card-title">اختر مدينة</div>
+              </div>
+              <div class="local-place-actions">
+                <button id="localEditBtn" class="btn btn-outline btn-sm" type="button">تعديل</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sheet-section-title">النطاق</div>
+          <label class="local-radio">
+            <input id="localOnlyToggle" type="checkbox" />
+            <span class="local-radio-main">
+              <span class="local-radio-title">عرض المنتجات المحلية فقط</span>
+              <span class="local-radio-desc">تفعيل الفلترة حسب الموقع</span>
+            </span>
+          </label>
+
+          <div class="local-footer">
+            <button id="localApplyBtn" class="btn btn-primary w-full" type="button">تطبيق</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script>
+      window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+        apiKey: "AIzaSyCz7OoXXwfeota0pWQIiMHlOONbZ_8eIC0",
+
+        authDomain: "coin-mastre.firebaseapp.com",
+
+        databaseURL: "https://coin-mastre-default-rtdb.firebaseio.com",
+
+        projectId: "coin-mastre",
+
+        storageBucket: "coin-mastre.appspot.com",
+
+        messagingSenderId: "852119585248",
+
+        appId: "1:852119585248:web:0b58cec5e51525a80fab85",
+
+        measurementId: "G-T4MXH2PWL7"
+
+      };
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
